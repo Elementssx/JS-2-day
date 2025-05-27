@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            height: 100vh;
+            background-color: aqua;
+            background-image: url("img/city.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: bottom;
+            overflow-y: hidden;
+        }
+        #plane {
+            position: absolute;
+            left: 0;
+            top: 150px;
+            transition: top 1.5s ease-out;
+        }
+        #plane:hover {
+            filter: contrast(120);
+        }
+    </style>
+</head>
+<body>
+    <img id="plane" src="img/airplane.webp" width="350px" alt="Airplane">
+    <script>
+        const plane = document.getElementById('plane');
+        let i = 0;
+        let moveToRight = true;
+        const initialTop = 150;
+        let currentTop = initialTop;
+        let canDropCat = false;
+
+        function movePlane() {
+                plane.style.left = (moveToRight ? ++i : --i) + "px";
+            
+            if (i <= 0) {
+                moveToRight = true;
+                plane.style.transform = "scale(1,1)";
+            } else if (i >= window.innerWidth - plane.offsetWidth) {
+                moveToRight = false;
+                plane.style.transform = "scale(-1,1)";
+            }
+
+                if (moveToRight) {
+                if (i < window.innerWidth/3 && currentTop < initialTop + 100) {
+                    currentTop += 0.5;
+                    canDropCat = false;
+                } 
+                else if (i >= window.innerWidth/3 && i < window.innerWidth*2/3) {
+                    canDropCat = true;
+                } 
+                else {
+                    canDropCat = false;
+                    currentTop = Math.max(initialTop, currentTop - 1);
+                }
+            } else {
+                currentTop = initialTop;
+                canDropCat = false;
+            }
+
+            plane.style.top = currentTop + "px";
+        }
+
+            plane.onclick = function() {
+            if (canDropCat) {
+                const cat = document.createElement('img');
+                cat.src = "img/cat_parachute.png";
+                cat.style.width = "100px";
+                cat.style.position = "absolute";
+                cat.style.left = (i + 20) + 'px';
+                cat.style.top = (currentTop + 50) + 'px';
+                document.body.append(cat);
+                
+                const fall = setInterval(() => {
+                    const top = parseInt(cat.style.top) + 1;
+                    cat.style.top = top + "px";
+                    if (top > window.innerHeight - 150) clearInterval(fall);
+                }, 10);
+            }
+        };
+
+        setInterval(movePlane, 10);
+    </script>
+</body>
+</html>
